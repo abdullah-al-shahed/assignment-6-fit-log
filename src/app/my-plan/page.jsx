@@ -1,5 +1,4 @@
 'use client';
-
 import Link from 'next/link';
 import { usePlan } from '@/context/PlanContext';
 import { Trash2, ArrowLeft, Dumbbell, Flame, Clock, CheckCircle } from 'lucide-react';
@@ -92,7 +91,8 @@ export default function MyPlanPage() {
             ))}
           </div>
 
-          {/* Summary Sidebar */}
+          {/* summary */}
+
           <div>
             <div className="bg-[#121418] border border-[#1f242d] rounded-3xl p-6 sticky top-24">
               <h3 className="font-heading text-xl text-white mb-4 uppercase border-b border-[#1f242d] pb-3">
