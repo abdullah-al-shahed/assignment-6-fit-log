@@ -1,76 +1,77 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 const PlanContext = createContext();
 
 export function PlanProvider({ children }) {
   const [plan, setPlan] = useState([]);
   const [saved, setSaved] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load initial data from localStorage on mount
+  // LocalStorage support
   useEffect(() => {
     const localPlan = localStorage.getItem('fitlog_plan');
     const localSaved = localStorage.getItem('fitlog_saved');
     if (localPlan) setPlan(JSON.parse(localPlan));
     if (localSaved) setSaved(JSON.parse(localSaved));
-    setIsLoaded(true);
   }, []);
 
-  // Save to localStorage only after initial load is complete
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('fitlog_plan', JSON.stringify(plan));
-    }
-  }, [plan, isLoaded]);
+    localStorage.setItem('fitlog_plan', JSON.stringify(plan));
+  }, [plan]);
 
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('fitlog_saved', JSON.stringify(saved));
-    }
-  }, [saved, isLoaded]);
+    localStorage.setItem('fitlog_saved', JSON.stringify(saved));
+  }, [saved]);
 
-  // Add workout to Today's Plan (Capped at 5 lifts)
   const addToPlan = (workout) => {
     if (plan.length >= 5) {
-      toast.error("Today's plan is capped at 5 workouts!");
+      toast.error("Cap reached! Today's plan is limited to 5 lifts.");
       return;
     }
     if (plan.some((item) => item.id === workout.id)) {
-      toast.error("Already in Today's Plan");
+      toast.error('Exercise is already in your plan!');
       return;
     }
-    setPlan([...plan, workout]);
-    toast.success("Added to today's plan");
+    setPlan((prev) => [...prev, { ...workout, completed: false }]);
+    toast.success('Added to today\'s plan!');
   };
 
-  // Add workout to Saved
   const addToSaved = (workout) => {
     if (saved.some((item) => item.id === workout.id)) {
-      toast.error("Already saved for later");
+      toast.error('Exercise is already saved!');
       return;
     }
-    setSaved([...saved, workout]);
-    toast.success("Saved for later");
+    setSaved((prev) => [...prev, workout]);
+    toast.success('Saved for later!');
   };
 
-  // Remove from Plan
+  const toggleComplete = (id) => {
+    setPlan((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const updatedStatus = !item.completed;
+          if (updatedStatus) toast.success('Workout marked as Done! 💪');
+          return { ...item, completed: updatedStatus };
+        }
+        return item;
+      })
+    );
+  };
+
   const removeFromPlan = (id) => {
-    setPlan(plan.filter((item) => item.id !== id));
-    toast.success("Removed from today's plan");
+    setPlan((prev) => prev.filter((item) => item.id !== id));
+    toast('Removed from plan', { icon: '🗑️' });
   };
 
-  // Remove from Saved
   const removeFromSaved = (id) => {
-    setSaved(saved.filter((item) => item.id !== id));
-    toast.success("Removed from saved list");
+    setSaved((prev) => prev.filter((item) => item.id !== id));
+    toast('Removed from saved list', { icon: '🗑️' });
   };
 
-  // Mark as Done
-  const markAsDone = (id) => {
-    removeFromPlan(id);
-    toast.success("Workout marked as completed!");
+  const clearPlan = () => {
+    setPlan([]);
+    toast('Plan cleared!', { icon: '🧹' });
   };
 
   return (
@@ -80,9 +81,10 @@ export function PlanProvider({ children }) {
         saved,
         addToPlan,
         addToSaved,
+        toggleComplete,
         removeFromPlan,
         removeFromSaved,
-        markAsDone,
+        clearPlan,
       }}
     >
       {children}
@@ -90,4 +92,6 @@ export function PlanProvider({ children }) {
   );
 }
 
-export const usePlan = () => useContext(PlanContext);
+export function usePlan() {
+  return useContext(PlanContext);
+}

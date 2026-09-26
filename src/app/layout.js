@@ -1,27 +1,22 @@
 import './globals.css';
+import { Toaster } from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { PlanProvider } from '@/context/PlanContext';
-import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
-  title: 'FitLog — Workout Library & Gym Companion',
-  description: 'Train with intent. Log every set.',
+  title: 'FitLog — Train Hard, Log Honest',
+  description: 'A dark, no-nonsense gym companion.',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen bg-[#0b0c0e] text-white">
+      <body className="bg-[#0a0b0d] text-white min-h-screen flex flex-col font-sans antialiased">
         <PlanProvider>
-          <Toaster 
-            position="bottom-right" 
-            toastOptions={{ 
-              style: { background: '#16181e', color: '#fff', border: '1px solid #2b303c' } 
-            }} 
-          />
+          <Toaster position="bottom-right" toastOptions={{ style: { background: '#121418', color: '#fff', border: '1px solid #1f242d' } }} />
           <Navbar />
-          <main className="flex-grow">{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </PlanProvider>
       </body>
