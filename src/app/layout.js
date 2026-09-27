@@ -14,7 +14,25 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-[#0a0b0d] text-white min-h-screen flex flex-col font-sans antialiased">
         <PlanProvider>
-          <Toaster position="bottom-right" toastOptions={{ style: { background: '#121418', color: '#fff', border: '1px solid #1f242d' } }} />
+          
+          <Toaster 
+            position="bottom-right" 
+            toastOptions={{ 
+              style: { 
+                background: '#121418', 
+                color: '#fff', 
+                border: '1px solid #1f242d',
+                borderRadius: '12px',
+                fontSize: '13px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#ccff00',
+                  secondary: '#000',
+                },
+              },
+            }} 
+          />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

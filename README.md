@@ -1,21 +1,48 @@
-# 🏋️ FitLog — Train With Intent. Log Every Set.
+# 🏋️‍♂️ FitLog — Train With Intent. Log Every Set.
 
-FitLog is a modern, dark-themed fitness companion app built with Next.js (App Router) and Tailwind CSS. It allows users to browse workout libraries, manage daily routines, track calories and workout durations, and save exercises for later.
-
-🌐 **Live Link:** [https://assignment-6-fit-log-alpha.vercel.app](https://assignment-6-fit-log-alpha.vercel.app) 
+FitLog is a dark-themed, responsive, no-nonsense gym companion app built with Next.js (App Router) and Tailwind CSS. It allows fitness enthusiasts to browse workout libraries, add them to a daily cap of 5 planned lifts, save workouts for later, track key metrics, and log completed sets seamlessly.
 
 ---
 
-## 🚀 Technologies Used
+## 🚀 Live Demo & Repository
+- **Live Site:** [https://assignment-6-fit-log-alpha.vercel.app](https://assignment-6-fit-log-alpha.vercel.app)
+- **GitHub Repository:** [https://github.com/abdullah-al-shahed/assignment-6-fit-log.git]
+
+---
+
+## ✨ 5 Key Features
+
+1. **Interactive Workout Library & Details:**
+   - Browse 12+ targeted lifts fetched dynamically from the FitLog API with filterable stats (Duration, Calories, Rating, Muscle Groups).
+   - Detailed view featuring step-by-step exercise instructions and technical specifications.
+
+2. **Daily Plan Cap (Max 5 Lifts) & Saved Workouts:**
+   - Restricts daily workout plans to a maximum of 5 exercises for focused training.
+   - Separate "Saved" tab to bookmark workouts for future routines.
+
+3. **Live Metrics Summary & Completion Tracking:**
+   - Real-time calculator tracking total planned exercises, cumulative workout minutes, and total calorie burn.
+   - Interactive "Mark as Done" feature with visual feedback.
+
+4. **Dynamic Sorting & LocalStorage Persistence:**
+   - Sort planned/saved lifts dynamically by Duration, Calories, or Rating.
+   - Automatic state persistence using `localStorage` so your daily routine survives page reloads.
+
+5. **Toast Notifications & Fully Responsive Design:**
+   - Instant feedback using `react-hot-toast` for user actions (adding, removing, or completing lifts).
+   - Tailored mobile-first UI with dark aesthetic, active navigation highlights, and custom 404 handling.
+
+---
+
+## 🛠️ Technologies Used
+
 - **Framework:** Next.js 15 (App Router)
 - **Styling:** Tailwind CSS
 - **Icons:** Lucide React
 - **Notifications:** React Hot Toast
 - **Deployment:** Vercel
 
-## ✨ Key Features
-1. **Live API Workout Library:** Fetches real-time workout lists and individual workout details from an external API.
-2. **Interactive Routine Builder (My Plan):** Add exercises to Today's Plan with a limit of 5 lifts per day, view real-time calories/duration summaries.
-3. **Sort & Dynamic Filtering:** Filter exercises by duration, calories burned, or rating in the library.
-4. **Mark Lifts as Done & Save for Later:** Manage workouts with completion toggles, saved bookmarks, and toast notifications.
-5. **Persistent State Management:** Automatically syncs plan and saved lists with `localStorage` so data survives page refreshes.
+---
+
+## 📋 Git Commit Guidelines
+This repository strictly follows clean commit history practices with clear, descriptive commit messages detailing features, UI refinements, context setups, and bug fixes.

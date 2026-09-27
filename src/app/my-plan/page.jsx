@@ -1,131 +1,181 @@
 'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePlan } from '@/context/PlanContext';
-import { Trash2, ArrowLeft, Dumbbell, Flame, Clock, CheckCircle } from 'lucide-react';
+import { Check, X, Clock, Flame, Star } from 'lucide-react';
 
 export default function MyPlanPage() {
-  const { plan, removeFromPlan, clearPlan } = usePlan();
+  const { plan, saved, toggleComplete, removeFromPlan } = usePlan();
+  const [activeTab, setActiveTab] = useState('plan');
+  const [sortBy, setSortBy] = useState('duration');
 
-  const totalDuration = plan.reduce((acc, item) => acc + (item.duration || 0), 0);
-  const totalCalories = plan.reduce((acc, item) => acc + (item.caloriesBurned || 0), 0);
+  const currentList = activeTab === 'plan' ? plan : saved;
+
+  // Calculate stats live
+  const totalExercises = plan.length;
+  const totalMinutes = plan.reduce((sum, item) => sum + (parseInt(item.duration) || 0), 0);
+  const totalCalories = plan.reduce((sum, item) => sum + (parseInt(item.calories) || 0), 0);
+
+  // Sorting logic
+  const sortedList = [...currentList].sort((a, b) => {
+    if (sortBy === 'duration') return (parseInt(a.duration) || 0) - (parseInt(b.duration) || 0);
+    if (sortBy === 'calories') return (parseInt(a.calories) || 0) - (parseInt(b.calories) || 0);
+    if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    return 0;
+  });
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-2 transition">
-            <ArrowLeft className="w-4 h-4" /> Back to Workouts
-          </Link>
-          <h1 className="font-heading text-3xl sm:text-4xl text-white uppercase">Today&apos;s Workout Routine</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage and execute your scheduled exercises</p>
-        </div>
+    <div className="max-w-7xl mx-auto px-6 py-8 text-white min-h-[80vh]">
+      <h1 className="text-3xl font-extrabold tracking-tight mb-1">MY PLAN</h1>
+      <p className="text-gray-400 text-sm mb-8">
+        Cap of five lifts for today. Finish them, then load more.
+      </p>
 
-        {plan.length > 0 && (
-          <button
-            onClick={clearPlan}
-            className="text-xs text-red-400 hover:text-red-300 border border-red-500/30 bg-red-500/10 px-3 py-2 rounded-lg transition flex items-center gap-1 cursor-pointer"
-          >
-            <Trash2 className="w-3.5 h-3.5" /> Clear All
-          </button>
-        )}
+      {/* Metrics Summary Row */}
+      <div className="bg-[#121418] border border-gray-800/80 rounded-2xl p-6 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-gray-800/80">
+        <div className="pt-2 md:pt-0">
+          <p className="text-xs text-gray-400 font-medium mb-1">Exercises</p>
+          <p className="text-4xl font-black text-[#ccff00]">{totalExercises}</p>
+        </div>
+        <div className="pt-4 md:pt-0 md:pl-6">
+          <p className="text-xs text-gray-400 font-medium mb-1">Minutes</p>
+          <p className="text-4xl font-black text-white">{totalMinutes}</p>
+        </div>
+        <div className="pt-4 md:pt-0 md:pl-6">
+          <p className="text-xs text-gray-400 font-medium mb-1">Calories</p>
+          <p className="text-4xl font-black text-white">{totalCalories}</p>
+        </div>
       </div>
 
-      {plan.length === 0 ? (
-        <div className="bg-[#121418] border border-[#1f242d] rounded-3xl p-12 text-center max-w-lg mx-auto my-12">
-          <div className="w-16 h-16 bg-[#1a1d24] border border-[#2b303c] rounded-2xl flex items-center justify-center mx-auto mb-4 text-[#ccff00]">
-            <Dumbbell className="w-8 h-8" />
-          </div>
-          <h3 className="font-heading text-2xl text-white mb-2">YOUR PLAN IS EMPTY</h3>
-          <p className="text-gray-400 text-sm mb-6">
-            You haven&apos;t added any exercises to your routine yet.
+      {/* Tabs & Sort Dropdown */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex bg-[#1a1d24] p-1 rounded-xl border border-gray-800">
+          <button
+            onClick={() => setActiveTab('plan')}
+            className={`px-5 py-2 rounded-lg text-xs font-bold transition ${
+              activeTab === 'plan'
+                ? 'bg-[#262a34] text-white shadow'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Today's Plan
+          </button>
+          <button
+            onClick={() => setActiveTab('saved')}
+            className={`px-5 py-2 rounded-lg text-xs font-bold transition ${
+              activeTab === 'saved'
+                ? 'bg-[#262a34] text-white shadow'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Saved
+          </button>
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <span className="text-xs text-gray-400">Sort By</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-[#1a1d24] border border-gray-800 text-xs text-white rounded-lg px-3 py-2 outline-none cursor-pointer hover:border-gray-700"
+          >
+            <option value="duration">Duration</option>
+            <option value="calories">Calories</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Workout Cards List */}
+      {sortedList.length > 0 ? (
+        <div className="space-y-4">
+          {sortedList.map((item) => (
+            <div
+              key={item.id}
+              className={`bg-[#121418] border border-gray-800/80 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition ${
+                item.completed ? 'opacity-50' : ''
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className="relative w-28 h-20 rounded-xl overflow-hidden bg-gray-900 flex-shrink-0">
+                  <Image
+                    src={item.image || '/banner.png'}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="font-extrabold text-base tracking-wide uppercase text-white mb-1">
+                    {item.name}
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-2">{item.equipment}</p>
+
+                  <div className="flex items-center gap-4 text-xs text-gray-300">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-[#ccff00]" /> {item.duration}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-[#ccff00]" /> {item.calories}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Star className="w-3.5 h-3.5 text-[#ccff00] fill-[#ccff00]" /> {item.rating}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                <Link
+                  href={`/workout/${item.id}`}
+                  className="px-4 py-2 border border-gray-700 rounded-full text-xs font-semibold hover:border-gray-500 transition text-gray-200"
+                >
+                  View Details
+                </Link>
+
+                {activeTab === 'plan' && (
+                  <button
+                    onClick={() => toggleComplete(item.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition ${
+                      item.completed
+                        ? 'bg-gray-800 text-gray-400'
+                        : 'bg-[#ccff00] text-black hover:bg-[#b8e600]'
+                    }`}
+                  >
+                    <Check className="w-4 h-4" />
+                    {item.completed ? 'Completed' : 'Mark as Done'}
+                  </button>
+                )}
+
+                <button
+                  onClick={() => removeFromPlan(item.id, activeTab)}
+                  className="p-2 text-gray-500 hover:text-white transition"
+                  title="Remove"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Empty State */
+        <div className="border border-dashed border-gray-800 rounded-2xl p-16 text-center my-8">
+          <h2 className="text-xl font-extrabold tracking-wide mb-2">NOTHING HERE YET</h2>
+          <p className="text-xs text-gray-400 mb-6">
+            Browse the library and add a lift to get today moving.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-[#ccff00] text-black font-semibold text-sm px-6 py-3 rounded-xl hover:bg-[#b8e600] transition"
+            className="inline-block bg-[#ccff00] text-black text-xs font-bold px-6 py-3 rounded-full hover:bg-[#b8e600] transition"
           >
-            Browse Workouts
+            Go to workouts
           </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Routine Item List */}
-          <div className="lg:col-span-2 space-y-4">
-            {plan.map((item, idx) => (
-              <div
-                key={`${item.id}-${idx}`}
-                className="bg-[#121418] border border-[#1f242d] rounded-2xl p-4 flex items-center justify-between gap-4 hover:border-[#ccff00]/30 transition"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#1a1d24] shrink-0 border border-[#2b303c]">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-[#ccff00] uppercase tracking-wider">
-                      Exercise #{idx + 1}
-                    </span>
-                    <h4 className="font-heading text-lg text-white">{item.name}</h4>
-                    <p className="text-xs text-gray-400">
-                      {item.sets} Sets × {item.reps} Reps
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="hidden sm:flex flex-col items-end text-xs text-gray-400">
-                    <span className="flex items-center gap-1 text-gray-300 font-medium">
-                      <Clock className="w-3.5 h-3.5 text-[#ccff00]" /> {item.duration}m
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Flame className="w-3.5 h-3.5 text-orange-400" /> {item.caloriesBurned} kcal
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => removeFromPlan(item.id)}
-                    className="p-2 text-gray-500 hover:text-red-400 rounded-lg bg-[#1a1d24] border border-[#2b303c] transition cursor-pointer"
-                    title="Remove from plan"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* summary */}
-
-          <div>
-            <div className="bg-[#121418] border border-[#1f242d] rounded-3xl p-6 sticky top-24">
-              <h3 className="font-heading text-xl text-white mb-4 uppercase border-b border-[#1f242d] pb-3">
-                Routine Summary
-              </h3>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Total Exercises</span>
-                  <span className="font-semibold text-white">{plan.length}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Est. Time</span>
-                  <span className="font-semibold text-[#ccff00] flex items-center gap-1">
-                    <Clock className="w-4 h-4" /> {totalDuration} min
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Est. Calories</span>
-                  <span className="font-semibold text-orange-400 flex items-center gap-1">
-                    <Flame className="w-4 h-4" /> {totalCalories} kcal
-                  </span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => alert('Routine Started! Stay focused.')}
-                className="w-full bg-[#ccff00] text-black font-bold py-3.5 px-4 rounded-xl hover:bg-[#b8e600] transition flex items-center justify-center gap-2 cursor-pointer uppercase text-sm tracking-wide"
-              >
-                <CheckCircle className="w-5 h-5" /> Start Workout Session
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
